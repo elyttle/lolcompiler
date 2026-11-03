@@ -5,27 +5,44 @@ fn main (){
 
 /// Trait for a simple lolcompiler front-end.
 /// Errors should cause immediate exit inside the implementation.
-pub trait Compiler {
+pub traits::Compiler for Compiler{
     /// Begin the compilation process (entry point).
-    fn compile(&mut self, source: &str);
+    fn compile(&mut self, source: &str){
+        self.lexer = LexicalAnalyzer::new(source);
+        self.current_token = self.lexer.start();
+        self.parse();
+    }
     /// Get the next token from the lexical analyzer.
-    fn next_token(&mut self) -> String;
+    fn next_token(&mut self) -> String{
+        let tok = self.next();
+        self.current_token = tok.clone();
+        tok
+    }
     /// Run the syntax analyzer starting from <lolcode>.
-    fn parse(&mut self);
+    fn parse(&mut self){
+        let mut parser = SyntaxAnalyzer::new(self);
+        parser.parse_lolcode();
+        if !self.current_token.is_empty(){
+            eprintln!("Syntax error: token '{}' found after #KBYE ",self.current_token);
+            std::process::exit(1);
+        }
+    }
     /// Get the current token being processed.
-    fn current_token(&self) -> String;
+    fn current_token(&self) -> String{self.current_token.clone()}
     /// Set the current token (typically used internally).
-    fn set_current_token(&mut self, tok: String);
+    fn set_current_token(&mut self, tok: String){self.current_token = tok;}
 }
 
 pub struct Compiler {
     pub current_token: String,
+    lexer: LexicalAnalyzer,
+    pub html:String,
 }
 
 impl Compiler {
     pub fn new() -> Self {
         Self {
-            current_token: String::new(),
+            current_token: String::new(), lexer: LexicalAnalyzer::new(""), html: String::new()
         }
     }
 }
