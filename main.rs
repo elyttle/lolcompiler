@@ -74,7 +74,7 @@ impl traits::Compiler for Compiler{
     /// Get the next token from the lexical analyzer.
     fn next_token(&mut self) -> String{
         let tok = self.lexer.next();
-        self.current_token = tok.clone();
+        self.set_current_token(tok.clone());
         tok
     }
     /// Run the syntax analyzer starting from <lolcode>.
@@ -104,7 +104,6 @@ impl Compiler {
             current_token: String::new(), 
             lexer: LexicalAnalyzer::new(""), 
             html: String::new(),
-            count: 0,
         }
     }
 }
@@ -154,6 +153,7 @@ impl LexicalAnalyzer{
                 "#MAEK LIST".into(), "#GIMMEH TITLE".into(), "#GIMMEH BOLD".into(), "#GIMMEH ITEM".into(), "#GIMMEH LINX".into(),
                 "#GIMMEH VAR".into(), "#IHAZ".into(), "#ITIZ".into(), "#MKAY".into(), "#OIC".into(), "#NEWLINE".into(),
             ],
+            count: 0,
         };
         lexer.tokenize();
         lexer
@@ -271,7 +271,6 @@ pub struct SyntaxAnalyzer<'a>{
 impl<'a>SyntaxAnalyzer<'a>{
     pub fn new(compiler:&'a mut Compiler) -> Self{
         Self{
-            count: 0,
             compiler,
             scopes: vec![Vec::new()],//global scope
             last_text:String::new(),
@@ -279,7 +278,7 @@ impl<'a>SyntaxAnalyzer<'a>{
         }
     }
     fn cur(&self)->String{
-        self.compiler.current_token.clone()
+        self.compiler.current_token()
     }
     fn advance(&mut self){
         self.compiler.next_token();
