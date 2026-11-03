@@ -104,6 +104,7 @@ impl Compiler {
             current_token: String::new(), 
             lexer: LexicalAnalyzer::new(""), 
             html: String::new(),
+            count: 0,
         }
     }
 }
@@ -114,6 +115,7 @@ pub struct LexicalAnalyzer{
     current_build: String,
     tokens: Vec<String>,
     pub keywords: Vec<String>,
+    pub count: usize,
 }
 
 impl traits::LexicalAnalyzer for LexicalAnalyzer{
@@ -264,7 +266,6 @@ pub struct SyntaxAnalyzer<'a>{
     compiler: &'a mut Compiler,
     scopes: Vec<Vec<(String, String)>>,
     last_text: String,
-    count: usize,
 }
 
 impl<'a>SyntaxAnalyzer<'a>{
